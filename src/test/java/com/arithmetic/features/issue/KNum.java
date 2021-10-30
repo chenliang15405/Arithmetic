@@ -27,7 +27,7 @@ public class KNum {
     }
 
     public int findKthLargest(int[] nums, int k) {
-        // 构建堆
+        // 构建堆, 构建一个小顶堆
         for(int i = 0; i < k; i++) {
             int index = i;
             while(nums[index] < nums[(index - 1) / 2]) {

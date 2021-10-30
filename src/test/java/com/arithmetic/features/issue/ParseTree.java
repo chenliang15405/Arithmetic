@@ -26,7 +26,7 @@ public class ParseTree {
         }
 
         for (Menu menu : result) {
-            List<Menu> childList = getChildList(menu.getParentId(), list);
+            List<Menu> childList = getChildList(menu.getId(), list);
             menu.setChildren(childList);
         }
         System.out.println(result);

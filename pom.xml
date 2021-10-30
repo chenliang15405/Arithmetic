@@ -13,7 +13,8 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-            <scope>test</scope>
+            <!--  如果设置下面的scope，那么在非test的包中无法使用单元测试          -->
+            <!--<scope>test</scope>-->
         </dependency>
     </dependencies>
 

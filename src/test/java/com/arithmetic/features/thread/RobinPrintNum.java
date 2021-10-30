@@ -26,30 +26,23 @@ public class RobinPrintNum {
      *
      * 需要使用3个Condition和1个相同锁对象，来控制打印的顺序
      *
+     * 使用AtomicInteger保证线程执行的顺序
+     *
      */
     @Test
     public void test() throws InterruptedException {
-        new Thread(() -> {
-            lock.lock();
-            try {
-                for (int i = 1; i <= 75; i+=3) {
-                    System.out.println(Thread.currentThread().getName() + "\t" + i);
-                    c2.signalAll();
-                    c1.await();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                lock.unlock();
-            }
-        }, "AA").start();
+        AtomicInteger atomInteger = new AtomicInteger(1);
 
         new Thread(() -> {
             lock.lock();
             try {
+                while(atomInteger.get() != 2) {
+                    c2.await();
+                }
                 for (int i = 2; i <= 75; i+=3) {
                     System.out.println(Thread.currentThread().getName() + "\t" + i);
                     c3.signalAll();
+                    atomInteger.compareAndSet(2, 3);
                     c2.await();
                 }
             } catch (InterruptedException e) {
@@ -62,9 +55,34 @@ public class RobinPrintNum {
         new Thread(() -> {
             lock.lock();
             try {
+                while(atomInteger.get() != 1) {
+                    c1.await();
+                }
+                for (int i = 1; i <= 75; i+=3) {
+                    System.out.println(Thread.currentThread().getName() + "\t" + i);
+                    c2.signalAll();
+                    atomInteger.compareAndSet(1, 2);
+                    c1.await();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                lock.unlock();
+            }
+        }, "AA").start();
+
+
+
+        new Thread(() -> {
+            lock.lock();
+            try {
+                while(atomInteger.get() != 3) {
+                    c3.await();
+                }
                 for (int i = 3; i <= 75; i+=3) {
                     System.out.println(Thread.currentThread().getName() + "\t" + i);
                     c1.signalAll();
+                    atomInteger.compareAndSet(3, 1);
                     c3.await();
                 }
             } catch (Exception e) {

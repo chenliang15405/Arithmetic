@@ -961,6 +961,8 @@ public class JueJinIssue {
 
     /**
      * 矩阵置0
+     *
+     *  其中有点问题，如果矩阵中有Integer.MAX_VALUE，那么就无法通过case
      */
     @Test
     public void setZeros() {
